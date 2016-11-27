@@ -40,6 +40,7 @@
 @interface VKSideMenu() <UITableViewDelegate, UITableViewDataSource>
 {
     UITapGestureRecognizer *tapGesture;
+    UISwipeGestureRecognizer *swipeGesture;
 }
 
 @property (nonatomic, strong) UIView *overlay;
@@ -124,6 +125,27 @@
     {
         tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTap:)];
         [self.overlay addGestureRecognizer:tapGesture];
+        
+        swipeGesture = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(didSwap:)];
+        switch (self.direction)
+        {
+            case VKSideMenuDirectionFromTop:
+                swipeGesture.direction = UISwipeGestureRecognizerDirectionUp;
+                break;
+                
+            case VKSideMenuDirectionFromLeft:
+                swipeGesture.direction = UISwipeGestureRecognizerDirectionLeft;
+                break;
+                
+            case VKSideMenuDirectionFromBottom:
+                swipeGesture.direction = UISwipeGestureRecognizerDirectionDown;
+                break;
+                
+            case VKSideMenuDirectionFromRight:
+                swipeGesture.direction = UISwipeGestureRecognizerDirectionRight;
+                break;
+        }
+        [self.overlay addGestureRecognizer:swipeGesture];
     }
     
 //     Setup frame before show
@@ -215,6 +237,7 @@
          [self.view removeFromSuperview];
          [self.overlay removeFromSuperview];
          [self.overlay removeGestureRecognizer:tapGesture];
+         [self.overlay removeGestureRecognizer:swipeGesture];
          
          self.overlay = nil;
          self.tableView = nil;
@@ -370,8 +393,14 @@
 
 -(void)didSwap:(UISwipeGestureRecognizer*)gesture
 {
-    if (gesture.state == UIGestureRecognizerStateEnded && self.enableGestures)
-        [self showWithSize:self.size];
+    if (gesture.state == UIGestureRecognizerStateEnded && self.enableGestures) {
+        if (gesture == swipeGesture) {
+            [self hide];
+        }
+        else {
+            [self showWithSize:self.size];
+        }
+    }
 }
 
 #pragma mark - Helpers

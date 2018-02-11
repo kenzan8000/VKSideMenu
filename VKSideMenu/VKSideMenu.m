@@ -190,7 +190,8 @@
     self.tableView.backgroundColor  = [UIColor clearColor];
     self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
-    [self.view addSubview:self.tableView];
+    if (@available(iOS 11, *)) { [[(UIVisualEffectView *)self.view contentView] addSubview:self.tableView]; }
+    else { [self.view addSubview:self.tableView]; }
 }
 
 #pragma mark - Appearance
